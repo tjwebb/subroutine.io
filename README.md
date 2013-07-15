@@ -1,4 +1,5 @@
-omega.io
+subroutine.io
 ========
 
-Simple JSON Response Generator
+Architecture: 
+input -> output
