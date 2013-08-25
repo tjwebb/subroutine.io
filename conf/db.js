@@ -45,13 +45,25 @@ module.exports = (function() {
     getSubroutine: function(hash) {
       return store('subroutine')
         .where('id', this.decode(hash))
-        .returning('id', 'js', 'run_count');
+        .returning('id', 'js', 'run_count', 'last_run');
     },
     incrementSubroutineRunCount: function(id) {
-      return store('subroutine')
+      /*
+       * XXX update doesn't seem to do anything
+      store('subroutine')
+        .where('id', id)
+        .update({ 'last_run': new Date() })
+        .then(function() {
+          console.log(arguments);
+        },
+        function() {
+          console.log(arguments);
+        });
+        */
+
+      store('subroutine')
         .where('id', id)
         .increment('run_count', 1)
-        .update({ last_run: new Date() })
         .exec();
     },
     insertSubroutine: function(js) {

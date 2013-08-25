@@ -6,7 +6,8 @@ var vm    = require('vm'),
 exports.get = function(req, res) {
   function invokeSubroutine(subroutine) {
     var sandbox = {
-      run_count: subroutine.run_count
+      run_count: subroutine.run_count + 1,
+      //last_run: subroutine.last_run
     };
     vm.runInNewContext('result = '+ subroutine.js, sandbox);
     db.incrementSubroutineRunCount(subroutine.id);
