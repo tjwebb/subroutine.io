@@ -1,5 +1,6 @@
 subroutine.io
 ========
 
-Architecture: 
-input -> output
+Dependencies:
+node v0.10.x
+
