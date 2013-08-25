@@ -1,5 +1,5 @@
-var vm      = require('vm'),
-  util    = require('util',
+var vm    = require('vm'),
+  util    = require('util'),
   jshint  = require('jshint').JSHINT,
   db      = require('../conf/db.js');
 
