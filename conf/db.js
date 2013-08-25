@@ -65,7 +65,7 @@ module.exports = (function() {
       hashids = new Hashids(props.salt, props.hashLength);
       store = new Knex.Initialize({
         client: 'pg',
-        debug: true,
+        //debug: true,
         connection: {
           host: process.env.SUBROUTINE_PG_HOST,
           port: process.env.SUBROUTINE_PG_PORT,
