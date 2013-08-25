@@ -10,16 +10,16 @@ exports.get = function(req, res) {
     };
     vm.runInNewContext('result = '+ subroutine.js, sandbox);
     db.incrementSubroutineRunCount(subroutine.id);
-    console.log(util.inspect(sandbox));
     return sandbox;
   }
   db.getSubroutine(req.params.hash).then(
     function(subroutine) {
-      console.log(subroutine[0].js);
       res.json(invokeSubroutine(subroutine[0]));
     },
     function(err) {
-      console.log(err);
+      res.json({
+        error: 'could not find subroutine '+ req.params.hash
+      });
     });
 };
 exports.put = function(req, res) {
@@ -35,7 +35,6 @@ exports.post = function(req, res) {
     }
     catch (e) {
       // run through jshint for finer error resolution
-      console.log(util.inspect(e));
       var hints = jshint(js);
       res.json({
         error: 'could not compile',

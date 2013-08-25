@@ -51,6 +51,7 @@ module.exports = (function() {
       return store('subroutine')
         .where('id', id)
         .increment('run_count', 1)
+        .update({ last_run: new Date() })
         .exec();
     },
     insertSubroutine: function(js) {
