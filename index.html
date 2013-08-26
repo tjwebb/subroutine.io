@@ -49,8 +49,8 @@
 <li>
 <code>npm install</code>. </li>
 <li><code>nodemon web.js</code></li>
-</ol><h4>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h4>
+</ol><h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
 
 <p>You can import subroutine.io examples into Postman: <a href="http://www.getpostman.com/">http://www.getpostman.com/</a></p>
 
@@ -61,35 +61,41 @@
 </ol><h3>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
 
-<ol>
-<li>
-<p>Create new subroutine:</p>
+<h4>
+<a name="create-new-subroutine" class="anchor" href="#create-new-subroutine"><span class="octicon octicon-link"></span></a>Create new subroutine</h4>
 
 <ul>
 <li>Request: <code>POST api.subroutine.io</code>
 </li>
-<li>POST Body: <pre>
+<li>
+<p>POST Body:</p>
+
+<pre>
 (function() {
     var message = ["hello", "world", "!!!"];
     return message.join(" ");
 })();
 </pre>
 </li>
-<li>Response: <pre>
+<li>
+<p>Response:</p>
+
+<pre>
 {
     hash: "RhBMiz7iKekh"
 }
 </pre>
 </li>
-</ul>
-</li>
-<li>
-<p>Invoke existing subroutine:</p>
+</ul><h4>
+<a name="invoke-existing-subroutine" class="anchor" href="#invoke-existing-subroutine"><span class="octicon octicon-link"></span></a>Invoke existing subroutine</h4>
 
 <ul>
 <li>Request: <code>GET api.subroutine.io/RhBMiz7iKekh</code>
 </li>
-<li>Response: <pre>
+<li>
+<p>Response:</p>
+
+<pre>
 {
     run_count: 15,
     last_run: "2013-08-26T02:13:01.376Z",
@@ -97,10 +103,8 @@
 }
 </pre>
 </li>
-<li><a href="http://api.subroutine.io/RhBMiz7iKekh">Run this function!</a></li>
+<li><p><a href="http://api.subroutine.io/RhBMiz7iKekh">Run this function!</a></p></li>
 </ul>
-</li>
-</ol>
       </section>
     </div>
 
