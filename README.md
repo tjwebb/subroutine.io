@@ -23,8 +23,8 @@ You can import subroutine.io examples into Postman: http://www.getpostman.com/
     `(function() {
         var message = ["hello", "world", "!!!"];
         return message.join(" ");
-    })();`
-    </pre>
+    })();`</pre>
+
 - Response:
     <pre>
     `{
@@ -40,6 +40,6 @@ You can import subroutine.io examples into Postman: http://www.getpostman.com/
         run_count: 15,
         last_run: "2013-08-26T02:13:01.376Z",
         result: "hello world !!!"
-    }`
-    </pre>
+    }`</pre>
+
 - [Run this function!](http://api.subroutine.io/RhBMiz7iKekh)
