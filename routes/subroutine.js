@@ -7,10 +7,10 @@ exports.get = function(req, res) {
   function invokeSubroutine(subroutine) {
     var sandbox = {
       run_count: subroutine.run_count + 1,
-      //last_run: subroutine.last_run
+      last_run: subroutine.last_run
     };
     vm.runInNewContext('result = '+ subroutine.js, sandbox);
-    db.incrementSubroutineRunCount(subroutine.id);
+    db.updateSubroutineMetadata(subroutine.id);
     return sandbox;
   }
   db.getSubroutine(req.params.hash).then(

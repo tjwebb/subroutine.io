@@ -47,24 +47,16 @@ module.exports = (function() {
         .where('id', this.decode(hash))
         .returning('id', 'js', 'run_count', 'last_run');
     },
-    incrementSubroutineRunCount: function(id) {
-      /*
-       * XXX update doesn't seem to do anything
+    updateSubroutineMetadata: function(id) {
       store('subroutine')
         .where('id', id)
         .update({ 'last_run': new Date() })
-        .then(function() {
-          console.log(arguments);
-        },
-        function() {
-          console.log(arguments);
-        });
-        */
+        .then();
 
       store('subroutine')
         .where('id', id)
         .increment('run_count', 1)
-        .exec();
+        .then();
     },
     insertSubroutine: function(js) {
       var now = new Date();
