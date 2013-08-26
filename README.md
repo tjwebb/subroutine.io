@@ -20,26 +20,28 @@ You can import subroutine.io examples into Postman: http://www.getpostman.com/
 - Request: `POST api.subroutine.io`
 - POST Body:
     <pre>
-    `(function() {
+    (function() {
         var message = ["hello", "world", "!!!"];
         return message.join(" ");
-    })();`</pre>
+    })();
+    </pre>
 
 - Response:
     <pre>
-    `{
+    {
         hash: "RhBMiz7iKekh"
-    }`
+    }
     </pre>
 
 #### Invoke existing subroutine ####
 - Request: `GET api.subroutine.io/RhBMiz7iKekh`
 - Response:
     <pre>
-    `{
+    {
         run_count: 15,
         last_run: "2013-08-26T02:13:01.376Z",
         result: "hello world !!!"
-    }`</pre>
+    }
+    </pre>
 
 - [Run this function!](http://api.subroutine.io/RhBMiz7iKekh)
