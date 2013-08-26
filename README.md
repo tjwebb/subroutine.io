@@ -29,7 +29,7 @@ You can import subroutine.io examples into Postman: http://www.getpostman.com/
 - Response:
     <pre>
     {
-        hash: "RhBMiz7iKekh"
+        key: "RhBMiz7iKekh"
     }
     </pre>
 

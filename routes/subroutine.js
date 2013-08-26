@@ -46,7 +46,7 @@ exports.post = function(req, res) {
     }
     db.insertSubroutine(js).then(
       function(obj) {
-        res.json({ hash: db.encode(obj[0]) });
+        res.json({ key: db.encode(obj[0]) });
       },
       function(err) {
         res.json(err);
