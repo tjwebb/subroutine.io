@@ -9,34 +9,37 @@
 1. `npm install`. 
 2. `nodemon web.js`
 
-#### Examples ####
+### Examples ###
 You can import subroutine.io examples into Postman: http://www.getpostman.com/
 
 1. Get the [subroutine.io Postman config.](https://www.getpostman.com/collections/ef6d0847f12cbb1ad3f3)
 2. Import and check out the examples.
 
 ### Usage ###
-1. Create new subroutine:
-    - Request: `POST api.subroutine.io`
-    - POST Body: <pre>
-        (function() {
-            var message = ["hello", "world", "!!!"];
-            return message.join(" ");
-        })();
+#### Create new subroutine ####
+- Request: `POST api.subroutine.io`
+- POST Body:
+    <pre>
+    `(function() {
+        var message = ["hello", "world", "!!!"];
+        return message.join(" ");
+    })();`
     </pre>
-    - Response: <pre>
-        {
-            hash: "RhBMiz7iKekh"
-        }
-</pre>
+- Response:
+    <pre>
+    `{
+        hash: "RhBMiz7iKekh"
+    }`
+    </pre>
 
-2. Invoke existing subroutine:
-    - Request: `GET api.subroutine.io/RhBMiz7iKekh`
-    - Response: <pre>
-        {
-            run_count: 15,
-            last_run: "2013-08-26T02:13:01.376Z",
-            result: "hello world !!!"
-        }
+#### Invoke existing subroutine ####
+- Request: `GET api.subroutine.io/RhBMiz7iKekh`
+- Response:
+    <pre>
+    `{
+        run_count: 15,
+        last_run: "2013-08-26T02:13:01.376Z",
+        result: "hello world !!!"
+    }`
     </pre>
-    - [Run this function!](http://api.subroutine.io/RhBMiz7iKekh)
+- [Run this function!](http://api.subroutine.io/RhBMiz7iKekh)
