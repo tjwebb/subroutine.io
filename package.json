@@ -1,23 +1,17 @@
 {
   "name": "subroutine",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "dependencies": {
-    "grunt": "~0.4.1",
     "express": "3.3.x",
     "hashids": "~0.1.4",
-    "knex": "~0.2.4",
+    "knex": "0.4.x",
     "pg": "~2.4.0",
     "nodemon": "~0.7.10",
     "cli-color": "~0.2.2",
     "underscore": "~1.5.1",
-    "jshint": "~2.1.10"
-  },
-  "devDependencies": {
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-compress": "~0.5.2",
-    "grunt-s3": "~0.1.0",
-    "grunt-shell": "~0.3.1"
+    "jshint": "~2.1.10",
+    "mstring": "~0.1.0",
+    "node-rest-client": "~0.7.0"
   },
   "engines": {
     "node": "~0.10.15",
@@ -31,5 +25,21 @@
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/tjwebb/subroutine.io/issues"
-  }
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "d0a2ea0adc05509dee5ca7b111db4227745c2630",
+  "description": "- <a style='font-size: 1.25em; font-family: Monaco, Monospace;' href='http://www.subroutine.io'>www.subroutine.io</a> - <a style='font-size: 1.25em; font-family: Monaco, Monospace;'  href='http://api.subroutine.io'>api.subroutine.io</a>",
+  "main": "web.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "subroutine.io",
+    "map-reduce",
+    "tail-recursion",
+    "distributed-computing",
+    "javascript",
+    "heroku"
+  ]
 }

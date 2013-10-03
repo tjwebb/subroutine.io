@@ -9,13 +9,13 @@ module.exports = (function() {
   var store, hashids;
 
   function createTableIfNotExists() {
-    store.Schema.hasTable('subroutine').then(
+    store.schema.hasTable('subroutine').then(
       function(exists) {
         if (exists) {
           util.log(color.cyan('[db] subroutine table already exists'));
           return;
         }
-        store.Schema.createTable('subroutine', function(table) {
+        store.schema.createTable('subroutine', function(table) {
           table.increments('id').primary().index();
           table.text('js');
           table.integer('run_count').defaultTo(0);
@@ -68,9 +68,9 @@ module.exports = (function() {
     },
     init: function() {
       hashids = new Hashids(props.salt, props.hashLength);
-      store = new Knex.Initialize({
+      store = new Knex.initialize({
         client: 'pg',
-        //debug: true,
+        debug: false,
         connection: {
           host: process.env.SUBROUTINE_PG_HOST,
           port: process.env.SUBROUTINE_PG_PORT,
