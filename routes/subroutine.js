@@ -72,21 +72,26 @@
         error: 'subroutine.io runtime error',
         exception: e.message,
         sandbox: sandbox,
-        stack: trimStacktrace(e.stack.split("\n")),
+        stack: trimStacktrace(e.stack.split('\n')),
         source: subroutine.js.split('\n')
       };
     }
   }
 
+  /**
+   * Trims stacktrace to only return activation records 'above' the
+   * invokeSubroutine function call.
+   */
   function trimStacktrace (stack) {
-    console.log(stack);
-    var boundary = _(stack).reduce(function(memo, frame) {
-      console.log(frame);
-      console.log(memo);
-      return memo + (frame.indexOf("invokeSubroutine") + 1);
-    });
-    console.log(boundary);
-    return _(stack).first(boundary);
+    var trimmedStack = [ ];
+
+    // XXX not sure why underscore functions don't seem to work with the 
+    // stack trace. good 'ol for loop to the rescue.
+    for (var i = 0; i < stack.length; i++) {
+      trimmedStack.push(stack[i]);
+      if (stack[i].indexOf("invokeSubroutine") !== -1) break;
+    }
+    return trimmedStack;
   }
 
   /**
@@ -100,10 +105,10 @@
 
   /**
    * buildSandbox
+   *
    * @param {Object}  subroutine object from database
    * @param {Object}  the parameter object passed in from the caller
    * @return {Object} subroutine sandbox
-   *
    */
   function buildSandbox (subroutine, query) {
     return {
