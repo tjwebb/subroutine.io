@@ -16,8 +16,8 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 
 app.post('/', subroutine.post);
-app.get ('/:hash', subroutine.get);
-app.put ('/:hash', subroutine.put);
+app.get ('/:key', subroutine.get);
+app.put ('/:key', subroutine.put);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {

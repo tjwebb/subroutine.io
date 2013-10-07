@@ -3,7 +3,7 @@ var util  = require('util'),
   Hashids = require('hashids'),
   crypto  = require('crypto'),
   Knex  = require('knex'),
-  props = require('../conf/properties.js');
+  env = require('../conf/properties.js');
 
 module.exports = (function() {
   var store, hashids;
@@ -39,12 +39,12 @@ module.exports = (function() {
     encode: function(id) {
       return hashids.encrypt(id);
     },
-    decode: function(hash) {
-      return hashids.decrypt(hash)[0];
+    decode: function(key) {
+      return hashids.decrypt(key)[0];
     },
-    getSubroutine: function(hash) {
+    getSubroutine: function(key) {
       return store('subroutine')
-        .where('id', this.decode(hash))
+        .where('id', this.decode(key))
         .returning('id', 'js', 'run_count', 'last_run');
     },
     updateSubroutineMetadata: function(id) {
@@ -67,7 +67,7 @@ module.exports = (function() {
       }, 'id');
     },
     init: function() {
-      hashids = new Hashids(props.salt, props.hashLength);
+      hashids = new Hashids(env.salt, env.keyLength);
       store = new Knex.initialize({
         client: 'pg',
         debug: false,
