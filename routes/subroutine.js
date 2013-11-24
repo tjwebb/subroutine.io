@@ -16,20 +16,22 @@
    * Handle subroutine invocation via GET request
    */
   module.exports.get = function(req, res) {
-    console.log('get');
+    run(req.params.key, req.query, res);
+  };
 
-    bindHttpResponseHandlers(req, res);
+  function run (key, query, res) {
+    bindHttpResponseHandlers(res);
 
-    db.getSubroutine(req.params.key).then(
+    db.getSubroutine(key).then(
       function(subroutine) {
-        invokeSubroutine(subroutine[0], req.query);
+        invokeSubroutine(subroutine[0], query);
       },
       function(err) {
         res.json({
-          error: util.format(env.strings.NotFoundErrorMsg, req.params.key)
+          error: util.format(env.strings.NotFoundErrorMsg, key)
         });
       });
-  };
+  }
 
   /**
    * Handle subroutine update via PUT
@@ -40,9 +42,14 @@
   };
 
   /**
-   * Handle subroutine submission via POST
+   * Handle subroutine submission via POST, or handle an invocation if 'key'
+   * is set.
    */
   module.exports.post = function(req, res) {
+    if (req.params.key) {
+      return run(req.params.key, req.body, res);
+    }
+
     var js = '', jsWrapper;
     req.on('data', function(chunk) { js += chunk; });
     /**
@@ -85,7 +92,6 @@
    * @returns result of function
    */
   function invokeSubroutine (subroutine, query) {
-    console.log('invokeSubroutine');
     var sandbox = buildSandbox(subroutine, query),
         jsWrapper = buildJavascriptWrapper(subroutine.js),
         t1, t2;
@@ -97,14 +103,18 @@
       vm.runInNewContext(jsWrapper, sandbox);
     }
     catch (e) {
-      sandbox.events.emit(env.events.EXCEPTION, {
-        error: env.strings.RuntimeErrorMsg,
-        exception: e.message,
-        sandbox: _(sandbox).omit([ '_', 'rest', 'emit', 'meta' ]),
-        stack: trimStacktrace(e.stack.split('\n')),
-        source: lineMapSource(subroutine.js.split('\n'))
-      });
+      handleRuntimeException(subroutine, sandbox, e);
     }
+  }
+
+  function handleRuntimeException (subroutine, sandbox, e) {
+    sandbox.events.emit(env.events.EXCEPTION, {
+      error: env.strings.RuntimeErrorMsg,
+      exception: e.message,
+      sandbox: _(sandbox).omit([ '_', 'rest', 'emit', 'parser', 'meta', 'RETURN', 'EXCEPTION', 'events' ]),
+      stack: trimStacktrace(e.stack.split('\n')),
+      source: lineMapSource(subroutine.js.split('\n'))
+    });
   }
 
   /**
@@ -183,7 +193,10 @@
    * Bind event listeners to the subroutine's environment.
    */
   function bindSubroutineHandlers (subroutine, sandbox) {
-    console.log('bindSubroutineHandlers');
+    process.once(
+      'uncaughtException',
+      _.partial(handleRuntimeException, subroutine, sandbox)
+    );
     sandbox.events.once(
       env.events.RETURN,
       _.partial(handleSubroutineReturn, subroutine, sandbox)
@@ -198,8 +211,6 @@
    * Handle the 'subroutine:return' event.
    */
   function handleSubroutineReturn (subroutine, sandbox, result) {
-    console.log('handleSubroutineReturn');
-    console.log(result);
     db.updateSubroutineMetadata(subroutine.id);
 
     events.emit(env.events.http.OK, {
@@ -226,8 +237,7 @@
   /**
    * Bind http response listeners.
    */
-  function bindHttpResponseHandlers (req, res) {
-    console.log('bindHttpResponseHandlers');
+  function bindHttpResponseHandlers (res) {
     events.once(env.events.http.OK, function (e) {
       res.json(_.extend({ code: 200 }, e));
     });

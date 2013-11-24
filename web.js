@@ -15,7 +15,8 @@ app.use(express.logger());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
-app.post('/', subroutine.post);
+app.post('/',     subroutine.post);
+app.post('/:key', subroutine.post);
 app.get ('/:key', subroutine.get);
 app.put ('/:key', subroutine.put);
 
