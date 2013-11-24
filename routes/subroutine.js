@@ -16,15 +16,13 @@
    * Handle subroutine invocation via GET request
    */
   module.exports.get = function(req, res) {
+    console.log('get');
 
     bindHttpResponseHandlers(req, res);
 
     db.getSubroutine(req.params.key).then(
       function(subroutine) {
-        invokeSubroutine(
-          subroutine[0],
-          _(req.query).extend({ key: req.params.key })
-        );
+        invokeSubroutine(subroutine[0], req.query);
       },
       function(err) {
         res.json({
@@ -87,24 +85,34 @@
    * @returns result of function
    */
   function invokeSubroutine (subroutine, query) {
+    console.log('invokeSubroutine');
     var sandbox = buildSandbox(subroutine, query),
         jsWrapper = buildJavascriptWrapper(subroutine.js),
         t1, t2;
 
     bindSubroutineHandlers(subroutine, sandbox);
 
-    process.once('uncaughtException', function(e) {
-      sandbox.events.emit(env.events.SubroutineException, {
+    sandbox.meta.startTime = new Date().valueOf();
+    try {
+      vm.runInNewContext(jsWrapper, sandbox);
+    }
+    catch (e) {
+      sandbox.events.emit(env.events.EXCEPTION, {
         error: env.strings.RuntimeErrorMsg,
         exception: e.message,
-        sandbox: _(sandbox).omit([ '_', 'rest', 'events', 'startTime' ]),
+        sandbox: _(sandbox).omit([ '_', 'rest', 'emit', 'meta' ]),
         stack: trimStacktrace(e.stack.split('\n')),
-        source: subroutine.js.split('\n')
+        source: lineMapSource(subroutine.js.split('\n'))
       });
-    });
+    }
+  }
 
-    sandbox.startTime = new Date().valueOf();
-    vm.runInNewContext(jsWrapper, sandbox);
+  /**
+   * Given an array of source code lines, create an object where line numbers
+   * map to code lines.
+   */
+  function lineMapSource (lines) {
+    return _.object(_.range(1, lines.length + 1), lines);
   }
 
   /**
@@ -115,7 +123,8 @@
     var trimmedStack = [ ];
 
     // XXX not sure why underscore functions don't seem to work with the 
-    // stack trace. good 'ol for loop to the rescue.
+    // stack trace. I think it's not a legit array. good 'ol for loop to the
+    // rescue.
     for (var i = 0; i < stack.length; i++) {
       trimmedStack.push(stack[i]);
       if (stack[i].indexOf("invokeSubroutine") !== -1) break;
@@ -129,7 +138,7 @@
    * Code that surrounds the subroutine. Invoked in the context of the sandbox.
    */
   function buildJavascriptWrapper (js) {
-    return "__result = "+ "(" + js + ")(query);";
+    return js + "\nmain(query);";
   }
 
   /**
@@ -141,14 +150,17 @@
    * @return {Object} subroutine sandbox
    */
   function buildSandbox (subroutine, query) {
+    var emitter = new EventEmitter();
     return {
       // basics
-      runCount: subroutine.run_count + 1,
-      lastRun: subroutine.last_run,
-      query: query,
+      meta: {
+        runCount: subroutine.run_count + 1,
+        lastRun: subroutine.last_run,
+        // time the subroutine execution; temporary
+        startTime: null
+      },
 
-      // time the subroutine execution; temporary
-      startTime: null,
+      query: query,
 
       // include some basic functions
       setTimeout: setTimeout,
@@ -156,9 +168,13 @@
       // include some libraries
       _:    require('underscore'),
       rest: require('node-rest-client').Client,
+      xml:  require('xml'),
 
-      // setup handler to catch the 'subroutine:return' event
-      events: new EventEmitter()
+      // setup handler to catch events fired from the subroutine
+      events: emitter,
+      emit: emitter.emit,
+      RETURN:    env.events.RETURN,
+      EXCEPTION: env.events.EXCEPTION
     };
   }
 
@@ -166,53 +182,56 @@
    * Bind event listeners to the subroutine's environment.
    */
   function bindSubroutineHandlers (subroutine, sandbox) {
+    console.log('bindSubroutineHandlers');
     sandbox.events.once(
-      env.events.SubroutineReturn,
-      handleSubroutineReturn.bind(undefined, subroutine, sandbox)
+      env.events.RETURN,
+      _.partial(handleSubroutineReturn, subroutine, sandbox)
     );
     sandbox.events.once(
-      env.events.SubroutineException,
-      handleSubroutineException.bind(undefined, subroutine, sandbox)
+      env.events.EXCEPTION,
+      _.partial(handleSubroutineException, subroutine, sandbox)
     );
-
   }
 
   /**
    * Handle the 'subroutine:return' event.
    */
-  function handleSubroutineReturn (subroutine, sandbox, event) {
+  function handleSubroutineReturn (subroutine, sandbox, result) {
+    console.log('handleSubroutineReturn');
+    console.log(result);
     db.updateSubroutineMetadata(subroutine.id);
 
-    var endTime = new Date().valueOf();
-    events.emit(env.events.RespondOk, _(event).extend({
+    events.emit(env.events.http.OK, {
       status: env.strings.SuccessMsg,
-      runTime: endTime - sandbox.startTime,
+      ms: new Date().valueOf() - sandbox.meta.startTime,
       lastRun: sandbox.lastRun,
-      query: sandbox.query
-    }));
+      query: sandbox.query,
+      result: result
+    });
   }
 
   /**
    * Handle 'subroutine:exception' event.
    */
-  function handleSubroutineException (subroutine, sandbox, event) {
+  function handleSubroutineException (subroutine, sandbox, error) {
     db.updateSubroutineMetadata(subroutine.id);
 
-    var endTime = new Date().valueOf();
-    events.emit(env.events.RespondError, _(event).extend({
-      runTime: endTime - sandbox.startTime,
-    }));
+    events.emit(env.events.http.ERROR, {
+      ms: new Date().valueOf() - sandbox.meta.startTime,
+      error: error
+    });
   }
 
   /**
    * Bind http response listeners.
    */
   function bindHttpResponseHandlers (req, res) {
-    events.once(env.events.RespondOk, function (event) {
-      res.json(event);
+    console.log('bindHttpResponseHandlers');
+    events.once(env.events.http.OK, function (e) {
+      res.json(_.extend({ code: 200 }, e));
     });
-    events.once(env.events.RespondError, function (event) {
-      res.json(event);
+    events.once(env.events.http.ERROR, function (e) {
+      res.json(_.extend({ code: 500 }, e));
     });
   }
 })();

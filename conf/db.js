@@ -1,5 +1,6 @@
 var util  = require('util'),
   color = require('cli-color'),
+  _ = require('underscore'),
   Hashids = require('hashids'),
   crypto  = require('crypto'),
   Knex  = require('knex'),
@@ -8,11 +9,14 @@ var util  = require('util'),
 module.exports = (function() {
   var store, hashids;
 
+  /**
+   * Initialize the subroutine table
+   */
   function createTableIfNotExists() {
     store.schema.hasTable('subroutine').then(
       function(exists) {
         if (exists) {
-          util.log(color.cyan('[db] subroutine table already exists'));
+          util.log(color.green('[db] subroutine table already exists'));
           return;
         }
         store.schema.createTable('subroutine', function(table) {
@@ -45,8 +49,12 @@ module.exports = (function() {
     getSubroutine: function(key) {
       return store('subroutine')
         .where('id', this.decode(key))
-        .returning('id', 'js', 'run_count', 'last_run');
+        .returning('id');
     },
+    
+    /**
+     * After a subroutine is invoked, update its statistics
+     */
     updateSubroutineMetadata: function(id) {
       store('subroutine')
         .where('id', id)
@@ -58,6 +66,10 @@ module.exports = (function() {
         .increment('run_count', 1)
         .then();
     },
+
+    /**
+     * Persist a new subroutine.
+     */
     insertSubroutine: function(js) {
       var now = new Date();
       return store('subroutine').insert({
@@ -71,15 +83,10 @@ module.exports = (function() {
       store = new Knex.initialize({
         client: 'pg',
         debug: false,
-        connection: {
-          host: process.env.SUBROUTINE_PG_HOST,
-          port: process.env.SUBROUTINE_PG_PORT,
-          user: process.env.SUBROUTINE_PG_USER,
-          password: process.env.SUBROUTINE_PG_PASS,
-          database: process.env.SUBROUTINE_PG_DB,
+        connection: _.extend({
           charset: 'utf8',
           ssl: true
-        }
+        }, env.datasource[process.env.NODE_ENV])
       });
       util.log(color.cyan('[db] Initialized Datastore with Knex.'));
       createTableIfNotExists();

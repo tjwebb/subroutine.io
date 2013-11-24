@@ -8,14 +8,14 @@
     "pg": "~2.4.0",
     "nodemon": "~0.7.10",
     "cli-color": "~0.2.2",
-    "underscore": "~1.5.1",
+    "underscore": "1.5.x",
     "jshint": "~2.1.10",
-    "mstring": "~0.1.0",
-    "node-rest-client": "~0.7.0"
+    "node-rest-client": "0.7.x",
+    "xml": "0.0.10"
   },
   "engines": {
-    "node": "~0.10.15",
-    "npm": "1.3.x"
+    "node": "0.10.x",
+    "npm": ">1.2"
   },
   "repository": {
     "type": "git",
