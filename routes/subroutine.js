@@ -166,9 +166,10 @@
       setTimeout: setTimeout,
 
       // include some libraries
-      _:    require('underscore'),
-      rest: require('node-rest-client').Client,
-      xml:  require('xml'),
+      _:      require('underscore'),
+      Client: require('node-rest-client').Client,
+      moment: require('moment'),
+      parser: require('xml2json'),
 
       // setup handler to catch events fired from the subroutine
       events: emitter,
