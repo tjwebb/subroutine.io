@@ -13,7 +13,9 @@
     "node-rest-client": "0.7.x",
     "xml": "0.0.10",
     "moment": "~2.4.0",
-    "xml2json": "~0.3.2"
+    "xml2json": "~0.3.2",
+    "geojson": "~0.1.4",
+    "backbone": "~1.1.0"
   },
   "engines": {
     "node": "0.10.x",

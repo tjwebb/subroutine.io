@@ -176,10 +176,12 @@
       setTimeout: setTimeout,
 
       // include some libraries
-      _:      require('underscore'),
-      Client: require('node-rest-client').Client,
-      moment: require('moment'),
-      parser: require('xml2json'),
+      _:          require('underscore'),
+      Client:     require('node-rest-client').Client,
+      moment:     require('moment'),
+      parser:     require('xml2json'),
+      geojson:    require('geojson'),
+      backbone:   require('backbone'),
 
       // setup handler to catch events fired from the subroutine
       events: emitter,
