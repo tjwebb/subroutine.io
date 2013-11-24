@@ -1,6 +1,7 @@
 var util      = require('util'),
   express     = require('express'),
   subroutine  = require('./routes/subroutine.js'),
+  cors        = require('cors'),
   color       = require('cli-color'),
   db          = require('./conf/db.js');
 
@@ -14,6 +15,7 @@ var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(cors());
 
 app.post('/',     subroutine.post);
 app.post('/:key', subroutine.post);
