@@ -182,6 +182,7 @@
       parser:     require('xml2json'),
       geojson:    require('geojson'),
       backbone:   require('backbone'),
+      googleapis: require('googleapis'),
 
       // setup handler to catch events fired from the subroutine
       events: emitter,

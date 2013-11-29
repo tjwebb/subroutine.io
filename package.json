@@ -16,7 +16,8 @@
     "xml2json": "~0.3.2",
     "geojson": "~0.1.4",
     "backbone": "~1.1.0",
-    "cors": "~2.1.0"
+    "cors": "~2.1.0",
+    "googleapis": "~0.4.6"
   },
   "engines": {
     "node": "0.10.x",
